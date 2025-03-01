@@ -1,4 +1,5 @@
 from flask import Flask
+
 from .routes import bp as main_bp
 
 

@@ -1,8 +1,11 @@
 from flask import Blueprint
 
-bp = Blueprint('main', __name__)
+bp = Blueprint("main", __name__)
 
 
-@bp.route('/')
+@bp.route("/")
 def home():
-    return 'Hello, World!'
+    return "Hello, World!"
+
+
+@bp.post("/post")
