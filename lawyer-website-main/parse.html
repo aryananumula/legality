@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Parsed Text Rendering</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      margin: 20px;
+    }
+    .content {
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .reference {
+      color: #007BFF;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="output" class="content"></div>
+
+  <script>
+    const text = `Based on the provided cases, it appears that there is a split in opinions on the issue of abortion.
+
+In the case of <ref>Planned Parenthood South Atlantic v. State of South Carolina</ref>, the court held that a statute that prohibits the performance of surgical abortions by certain medical professionals, but allows medication abortions to be performed by them, is unconstitutional as applied to those medical professionals.
+
+On the other hand, in <ref>The Lilith Fund for Reproductive Equity v. Mark Lee Dickson and Right to Life East Texas</ref>, the court upheld a Texas law that prohibited certain medical professionals from performing abortions, even when confronted with a pregnant woman's decision to terminate her pregnancy.
+
+There is also a precedent set in the case of <ref>Virginia ex rel. Cuccinelli v. Sebelius</ref>, where the court ruled that a provision of the Affordable Care Act that required insurance companies to cover certain abortion services was unconstitutional.
+
+Additionally, the case of <ref>Moms for Liberty - Brevard County, FL v. Brevard Public Schools</ref> highlights the ongoing debate on reproductive rights, as the issue of parental notice requirements for minors seeking abortion services is a contentious one.
+
+These cases illustrate the complexity and the ongoing debate surrounding the issue of abortion in the United States.`;
+
+    // Function to replace <ref>...</ref> with styled span elements
+    function parseText(input) {
+      // Replace <ref> tags with a span that has the "reference" class
+      return input.replace(/<ref>(.*?)<\/ref>/g, '<span class="reference">$1</span>');
+    }
+
+    // Render the processed text and replace newline characters with <br> for proper formatting.
+    document.getElementById('output').innerHTML = parseText(text).replace(/\n/g, '<br>');
+  </script>
+</body>
+</html>
