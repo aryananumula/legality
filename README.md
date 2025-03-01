@@ -6,4 +6,4 @@ King: Aryan Anumula
 
 Nobles: Matthew Wang, Jingfan Feng
 
-Serfs: Neel S, Alexander, Aryavart S
+Serfs: Neel S, Alexander, Aryavart Singh
