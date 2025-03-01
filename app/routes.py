@@ -4,7 +4,12 @@ import secrets
 
 import requests
 from dotenv import load_dotenv
+<<<<<<< HEAD
 from flask import Flask, request, stream_with_context, render_template
+=======
+from flask import Flask, request, stream_with_context
+from flask_cors import CORS
+>>>>>>> ab99b05351cf93186c91f490a39d36150ced30e7
 from huggingface_hub import InferenceClient
 
 load_dotenv()
@@ -17,7 +22,9 @@ client = InferenceClient(
     api_key=hf,
 )
 
+
 bp = Flask(__name__)
+CORS(bp)
 
 tagp = """Write a keyword for a legal database based on the chat history and the current question.
 
@@ -127,9 +134,6 @@ def session():
         sessions[session_id].append({"role": "assistant", "content": total})
         with open("sessions.json", "w") as f:
             f.write(json.dumps(sessions))
-        yield json.dumps(
-            {"type": "response", "session_id": session_id, "response": total}
-        )
         return
 
     return bp.response_class(
