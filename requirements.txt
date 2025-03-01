@@ -6,6 +6,7 @@ colorama==0.4.6
 dotenv==0.9.9
 filelock==3.17.0
 Flask==3.1.0
+flask-cors==5.0.1
 fsspec==2025.2.0
 huggingface-hub==0.29.1
 idna==3.10

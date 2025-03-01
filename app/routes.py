@@ -32,6 +32,11 @@ def home():
     return render_template('home.html')
 
 
+@bp.route("/about")
+def about():
+    return render_template('about.html')
+
+
 @bp.route("/search", methods=["POST"])
 async def search_get():
     data = request.data.decode("utf-8")
