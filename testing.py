@@ -2,10 +2,7 @@ from time import time
 
 import requests
 
-json_data = {
-    "content": "What about mining industries? Is fracking legal?",
-    "session_id": "MFtLWhXp6sMb7_o_Tjx1oQ",
-}
+json_data = {"content": "What is the consensus on abortion?"}
 
 start_time = time()
 
@@ -15,7 +12,7 @@ with requests.post(
     print("Output:")
     for chunk in r.iter_lines(decode_unicode=True):
         if chunk:
-            print(chunk)
+            print(chunk, flush=True)  # Flush output immediately
 
 end_time = time()
 
