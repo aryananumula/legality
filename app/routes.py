@@ -4,12 +4,8 @@ import secrets
 
 import requests
 from dotenv import load_dotenv
-<<<<<<< HEAD
-from flask import Flask, request, stream_with_context, render_template
-=======
-from flask import Flask, request, stream_with_context
+from flask import Flask, render_template, request, stream_with_context
 from flask_cors import CORS
->>>>>>> ab99b05351cf93186c91f490a39d36150ced30e7
 from huggingface_hub import InferenceClient
 
 load_dotenv()
@@ -18,7 +14,7 @@ law = os.getenv("LAW")
 hf = os.getenv("HF")
 
 client = InferenceClient(
-    "meta-llama/Llama-3.2-3B-Instruct",
+    "mistralai/Mistral-7B-Instruct-v0.3",
     api_key=hf,
 )
 
@@ -36,12 +32,12 @@ casep = """Write a response for the user's question, which is after all the URLs
 
 @bp.route("/")
 def home():
-    return render_template('home.html')
+    return render_template("home.html")
 
 
 @bp.route("/about")
 def about():
-    return render_template('about.html')
+    return render_template("about.html")
 
 
 @bp.route("/search", methods=["POST"])
@@ -94,12 +90,10 @@ def session():
         with open("sessions.json", "w") as f:
             f.write(json.dumps(sessions))
         response = client.chat_completion(
-            session[:-1] +
-            [{"role": "user", "content": f"{data['content']}\n{tagp}"}]
+            session[:-1] + [{"role": "user", "content": f"{data['content']}\n{tagp}"}]
         )
         print(response.choices[0].message.content)
-        cases = json.loads(search(response.choices[0].message.content))[
-            "results"][:25]
+        cases = json.loads(search(response.choices[0].message.content))["results"][:25]
 
         with open("cases.json", "w") as f:
             f.write(json.dumps(cases))

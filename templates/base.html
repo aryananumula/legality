@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Adding marked.js -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+      }
+      #chatbox {
+        width: 90%;
+        height: 70vh;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        background: white;
+        padding: 10px;
+        margin-top: 20px;
+        white-space: pre-wrap; /* Ensures newlines are respected */
+      }
+      #input-container {
+        width: 90%;
+        display: flex;
+        margin-top: 10px;
+      }
+      #user-input {
+        flex: 1;
+        padding: 10px;
+      }
+      button {
+        padding: 10px;
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>AI Chat</h2>
+    <div id="chatbox"></div>
+    <div id="input-container">
+      <input type="text" id="user-input" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+      function sendMessage() {
+        let userInput = document.getElementById("user-input").value;
+        if (!userInput) return;
+
+        console.log("User Input:", userInput);
+        $("#chatbox").append("<p><strong>You:</strong> " + userInput + "</p>");
+        document.getElementById("user-input").value = "";
+
+        let aiMessage = $(
+          "<p><strong>AI:</strong> <span class='ai-response'></span></p>"
+        );
+        $("#chatbox").append(aiMessage);
+
+        fetch("http://localhost:5000/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: userInput }),
+        })
+          .then((response) => {
+            const reader = response.body.getReader();
+            let decoder = new TextDecoder("utf-8");
+            let aiResponseElement = aiMessage.find(".ai-response");
+
+            function readStream() {
+              reader.read().then(({ done, value }) => {
+                if (done) {
+                  console.log("AI Response complete");
+                  return;
+                }
+
+                let chunkSplits = decoder.decode(value, { stream: true });
+                jsonObjects = chunkSplits.split(/(?<=\})(?=\{)/);
+                for (let chunk of jsonObjects) {
+                  if (chunk.trim() === "") continue;
+                  console.log("Received chunk:", chunk);
+                  try {
+                    let parsedChunk = JSON.parse(chunk);
+                    let textChunk = parsedChunk.response;
+
+                    // Convert Markdown to HTML
+                    let markdownHTML = marked(textChunk);
+                    aiResponseElement.append(markdownHTML); // Append the converted HTML
+
+                    $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                  } catch (e) {
+                    console.error("Error parsing chunk:", e, chunk);
+                  }
+                }
+
+                readStream();
+              });
+            }
+            readStream();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            aiMessage.find(".ai-response").append("Error: " + error);
+          });
+      }
+    </script>
+  </body>
+</html>
