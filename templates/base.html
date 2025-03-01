@@ -6,10 +6,9 @@
     <title>AI Chat</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Adding marked.js -->
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: "Arial", sans-serif;
         margin: 0;
         padding: 0;
         background-color: #f4f4f4;
@@ -18,50 +17,148 @@
         align-items: center;
         height: 100vh;
       }
+
       #chatbox {
         width: 90%;
         height: 70vh;
         overflow-y: auto;
         border: 1px solid #ccc;
         background: white;
-        padding: 10px;
+        padding: 20px;
         margin-top: 20px;
-        white-space: pre-wrap; /* Ensures newlines are respected */
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
+
+      .chat-message {
+        padding: 10px 15px;
+        border-radius: 12px;
+        max-width: 75%;
+        display: inline-block;
+        clear: both;
+        margin-bottom: 10px;
+        font-size: 16px;
+        word-wrap: break-word;
+        position: relative;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .chat-message:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .user-message {
+        background-color: #007bff;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0;
+        position: relative;
+      }
+
+      .user-message::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        right: 10px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-top: 10px solid #007bff;
+      }
+
+      .ai-message {
+        background-color: #f1f1f1;
+        color: #333;
+        align-self: flex-start;
+        border-bottom-left-radius: 0;
+        position: relative;
+      }
+
+      .ai-message::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 10px;
+        width: 0;
+        height: 0;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #f1f1f1;
+      }
+
       #input-container {
         width: 90%;
         display: flex;
         margin-top: 10px;
+        gap: 10px;
       }
+
       #user-input {
         flex: 1;
-        padding: 10px;
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        resize: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
       }
+
+      #user-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+      }
+
       button {
-        padding: 10px;
-        margin-left: 10px;
+        padding: 12px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      button:focus {
+        outline: none;
       }
     </style>
   </head>
   <body>
-    <h2>AI Chat</h2>
     <div id="chatbox"></div>
     <div id="input-container">
-      <input type="text" id="user-input" placeholder="Type a message..." />
+      <textarea
+        id="user-input"
+        placeholder="Type a message..."
+        rows="1"
+        onkeydown="handleKeyPress(event)"
+      ></textarea>
       <button onclick="sendMessage()">Send</button>
     </div>
 
     <script>
       function sendMessage() {
         let userInput = document.getElementById("user-input").value;
-        if (!userInput) return;
+        if (!userInput.trim()) return;
 
         console.log("User Input:", userInput);
-        $("#chatbox").append("<p><strong>You:</strong> " + userInput + "</p>");
+        $("#chatbox").append(
+          "<div class='chat-message user-message'>" + userInput + "</div>"
+        );
         document.getElementById("user-input").value = "";
 
         let aiMessage = $(
-          "<p><strong>AI:</strong> <span class='ai-response'></span></p>"
+          "<div class='chat-message ai-message'><span class='ai-response'></span></div>"
         );
         $("#chatbox").append(aiMessage);
 
@@ -90,10 +187,8 @@
                   try {
                     let parsedChunk = JSON.parse(chunk);
                     let textChunk = parsedChunk.response;
-
-                    // Convert Markdown to HTML
-                    let markdownHTML = marked(textChunk);
-                    aiResponseElement.append(markdownHTML); // Append the converted HTML
+                    aiResponseElement.append(textChunk);
+                    aiResponseElement.html(marked.parse(textChunk));
 
                     $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
                   } catch (e) {
@@ -110,6 +205,13 @@
             console.error("Error:", error);
             aiMessage.find(".ai-response").append("Error: " + error);
           });
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendMessage();
+        }
       }
     </script>
   </body>
