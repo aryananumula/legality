@@ -1,3 +1,4 @@
+import json
 from time import time
 
 import requests
@@ -6,15 +7,26 @@ json_data = {"content": "What is the consensus on abortion?"}
 
 start_time = time()
 
-with requests.post(
-    "http://127.0.0.1:5000/session", json=json_data, timeout=7, stream=True
-) as r:
-    print("Output:")
-    for chunk in r.iter_lines(decode_unicode=True):
-        if chunk:
-            print(chunk, flush=True)  # Flush output immediately
+# iterable response
+r = requests.post(
+    "http://127.0.0.1:5000/session", json=json_data, stream=True
+).iter_content(100000)
+for chunk in r:
+    if chunk:
+        # decode the chunk
+        decoded_chunk = json.loads(chunk.decode("utf-8"))
+        # print the decoded chunk
+        session_id = decoded_chunk.get("session_id")
+        print(decoded_chunk["response"], end="\n", flush=True)
+json_data = {"session_id": session_id, "content": "What about Roe v. Wade?"}
 
-end_time = time()
-
-print("HTTP response time:", r.elapsed.total_seconds())
-print("Actually elapsed time:", end_time - start_time)
+r = requests.post(
+    "http://127.0.0.1:5000/session", json=json_data, stream=True
+).iter_content(100000)
+for chunk in r:
+    if chunk:
+        # decode the chunk
+        decoded_chunk = json.loads(chunk.decode("utf-8"))
+        # print the decoded chunk
+        session_id = decoded_chunk.get("session_id")
+        print(decoded_chunk["response"], end="\n", flush=True)
