@@ -23,7 +23,7 @@ bp = Flask(__name__)
 CORS(bp)
 
 tagp = """Write a keyword for a legal database based on the chat history and the current question.
-
+f
 Do not answer anything else, no explanation, just the keyword or keywords.
 
 Example: "What is the consensus on abortion?" -> abortion"""
