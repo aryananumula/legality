@@ -4,12 +4,8 @@ import secrets
 
 import requests
 from dotenv import load_dotenv
-<<<<<<< HEAD
 from flask import Flask, request, stream_with_context, render_template
-=======
-from flask import Flask, request, stream_with_context
 from flask_cors import CORS
->>>>>>> ab99b05351cf93186c91f490a39d36150ced30e7
 from huggingface_hub import InferenceClient
 
 load_dotenv()
